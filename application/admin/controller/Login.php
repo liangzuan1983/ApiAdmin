@@ -64,10 +64,10 @@ class Login extends Base {
             return $this->buildFailed(ReturnCode::LOGIN_ERROR, '用户名密码不正确');
         }
         $apiAuth = md5(uniqid() . time());
-        cache($apiAuth, json_encode($userInfo), config('apiAdmin.ONLINE_TIME'));
-        cache($userInfo['id'], $apiAuth, config('apiAdmin.ONLINE_TIME'));
+        cache('Login:' . $apiAuth, json_encode($userInfo), config('apiAdmin.ONLINE_TIME'));
+        cache('Login:' . $userInfo['id'], $apiAuth, config('apiAdmin.ONLINE_TIME'));
 
-        $return['access'] = 1000000;
+        $return['access'] = [];
         $isSupper = Tools::isAdministrator($userInfo['id']);
         if ($isSupper) {
             $access = AdminMenu::all(['hide' => 0]);
@@ -92,8 +92,8 @@ class Login extends Base {
 
     public function logout() {
         $ApiAuth = $this->request->header('ApiAuth');
-        cache($ApiAuth, null);
-        cache($this->userInfo['id'], null);
+        cache('Login:' . $ApiAuth, null);
+        cache('Login:' . $this->userInfo['id'], null);
 
         return $this->buildSuccess([], '登出成功');
     }
