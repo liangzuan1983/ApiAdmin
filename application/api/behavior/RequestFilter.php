@@ -20,6 +20,7 @@ class RequestFilter {
 
     /**
      * 默认行为函数
+     * @throws \think\Exception
      * @throws \think\exception\DbException
      * @author zhaoxiang <zhaoxiang051405@gmail.com>
      */
@@ -68,7 +69,7 @@ class RequestFilter {
 
             $newData = [];
             foreach ($rule as $item) {
-                $newData[$item['fieldName']] = $data[$item['fieldName']];
+                $newData[$item['fieldName']] = isset($data[$item['fieldName']])? $data[$item['fieldName']] : '';
                 if (!$item['isMust'] && $item['default'] !== '' && !isset($data[$item['fieldName']])) {
                     $newData[$item['fieldName']] = $item['default'];
                 }
@@ -76,16 +77,16 @@ class RequestFilter {
 
             switch ($method) {
                 case 'GET':
-                    $request->get($newData);
+                    $request->forceGet($newData);
                     break;
                 case 'POST':
-                    $request->post($newData);
+                    $request->forcePost($newData);
                     break;
                 case 'DELETE':
-                    $request->delete($newData);
+                    $request->forceDelete($newData);
                     break;
                 case 'PUT':
-                    $request->put($newData);
+                    $request->forcePut($newData);
                     break;
             }
             ApiLog::setRequestAfterFilter($newData);
